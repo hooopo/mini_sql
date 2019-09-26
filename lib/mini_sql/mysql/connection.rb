@@ -12,24 +12,21 @@ module MiniSql
       end
 
       def query_single(sql, *params)
-        if params && params.length > 0
-          sql = param_encoder.encode(sql, *params)
-        end
-        raw_connection.query(sql, as: :array).to_a.flatten!
+        run(sql, :array, params).to_a.flatten!
       end
 
       def query_hash(sql, *params)
-        result = run(sql, params)
+        result = run(sql, :hash, params)
         result.to_a
       end
 
       def exec(sql, *params)
-        run(sql, params)
+        run(sql, :array, params)
         raw_connection.affected_rows
       end
 
       def query(sql, *params)
-        result = run(sql, params)
+        result = run(sql, :array, params)
         @deserializer_cache.materialize(result)
       end
 
@@ -43,11 +40,21 @@ module MiniSql
 
       private
 
-      def run(sql, params)
+      def run(sql, as, params)
         if params && params.length > 0
           sql = param_encoder.encode(sql, *params)
         end
-        raw_connection.query(sql, as: :hash)
+
+        raw_connection.query(
+          sql, 
+          as: as, 
+          database_timezone: :utc, 
+          application_timezone: :utc,
+          cast_booleans: true,
+          cast: true,
+          cache_rows: true,
+          symbolize_keys: false
+        )
       end
     end
   end
