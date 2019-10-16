@@ -12,7 +12,7 @@ module MiniSql
       end
 
       def query_single(sql, *params)
-        run(sql, :array, params).to_a.flatten!
+        run(sql, :array, params).to_a.flatten
       end
 
       def query_hash(sql, *params)
