@@ -44,7 +44,9 @@ module MiniSql
         if params && params.length > 0
           sql = param_encoder.encode(sql, *params)
         end
-
+        if MiniSql.enable_log && MiniSql.logger
+          MiniSql.logger.info(sql)
+        end
         raw_connection.query(
           sql, 
           as: as, 

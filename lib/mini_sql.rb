@@ -10,6 +10,10 @@ require_relative "mini_sql/builder"
 require_relative "mini_sql/inline_param_encoder"
 
 module MiniSql
+  class << self
+    attr_accessor :logger
+    attr_accessor :enable_log
+  end
   if RUBY_ENGINE == 'jruby'
     module Postgres
       autoload :Connection, "mini_sql/postgres_jdbc/connection"
